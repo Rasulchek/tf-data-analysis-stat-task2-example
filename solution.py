@@ -10,10 +10,13 @@ def solution(p: float, x: np.array) -> tuple:
     # Измените код этой функции
     # Это будет вашим решением
     # Не меняйте название функции и её аргументы
-    alpha = (1 + p) / 2
     n = len(x)
-    xx = x * x
-    k = n / (25 * sum(xx))
-    fp = norm.ppf(alpha)
+    S = np.std(x, ddof=1)  # выборочное стандартное отклонение
+    alpha = 1 - p
+    df = n - 1
+    chi2_left = chi2.ppf(alpha / 2, df)
+    chi2_right = chi2.ppf(1 - alpha / 2, df)
+    lower_bound = np.sqrt((df * S ** 2) / chi2_right)
+    upper_bound = np.sqrt((df * S ** 2) / chi2_left)
 
-    return k / (1 + fp), k / (1 - fp)
+    return lower_bound, upper_bound
