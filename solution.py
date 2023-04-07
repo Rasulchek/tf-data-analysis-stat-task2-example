@@ -10,13 +10,21 @@ def solution(p: float, x: np.array) -> tuple:
     # Измените код этой функции
     # Это будет вашим решением
     # Не меняйте название функции и её аргументы
-    n = len(x)
-    S = np.std(x, ddof=1)  # выборочное стандартное отклонение
-    alpha = 1 - p
-    df = n - 1
-    chi2_left = chi2.ppf(alpha / 2, df)
-    chi2_right = chi2.ppf(1 - alpha / 2, df)
-    lower_bound = np.sqrt((df * S ** 2) / chi2_right)
-    upper_bound = np.sqrt((df * S ** 2) / chi2_left)
+    squared_distances = np.sum(x ** 2, axis=1)
 
-    return lower_bound, upper_bound
+    sum_squared_distances = np.sum(squared_distances)
+
+    n = len(x)
+    df = 2 * n
+
+    alpha = 1 - p
+    chi2_low = chi2.ppf(alpha / 2, df)
+    chi2_high = chi2.ppf(1 - alpha / 2, df)
+
+    sigma2_low = sum_squared_distances / chi2_high
+    sigma2_high = sum_squared_distances / chi2_low
+
+    sigma_low = np.sqrt(sigma2_low / 50)
+    sigma_high = np.sqrt(sigma2_high / 50)
+
+    return sigma_low, sigma_high
